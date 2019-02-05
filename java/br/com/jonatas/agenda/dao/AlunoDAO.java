@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.widget.Switch;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,20 +16,23 @@ public class AlunoDAO extends SQLiteOpenHelper {
 
 
     public AlunoDAO(Context context) {
-        super(context, "Agenda", null, 1);
+        super(context, "Agenda", null, 2);
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        String sql = "CREATE TABLE Contatos (id INTEGER PRIMARY KEY, aluno TEXT NOT NULL, endereco TEXT, telefone TEXT, email TEXT, nota REAL)";
+        String sql = "CREATE TABLE Contatos (id INTEGER PRIMARY KEY, aluno TEXT NOT NULL, endereco TEXT, telefone TEXT, email TEXT, nota REAL, caminhoFoto TEXT)";
         db.execSQL(sql);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        String sql = "DROP TABLE IF EXISTS Contatos";
-        db.execSQL(sql);
-        onCreate(db);
+        String sql = "";
+        switch (oldVersion) {
+            case 1:
+                sql = "ALTER TABLE Contatos ADD COLUMN caminhoFoto TEXT";
+                db.execSQL(sql);
+        }
     }
 
     public void insert(Aluno aluno) {
@@ -44,6 +48,7 @@ public class AlunoDAO extends SQLiteOpenHelper {
         dados.put("telefone", aluno.getTelefone());
         dados.put("email", aluno.getEmail());
         dados.put("nota", aluno.getNota());
+        dados.put("caminhoFoto", aluno.getCaminhoFoto());
         return dados;
     }
 
@@ -62,6 +67,7 @@ public class AlunoDAO extends SQLiteOpenHelper {
             aluno.setTelefone(c.getString(c.getColumnIndex("telefone")));
             aluno.setEmail(c.getString(c.getColumnIndex("email")));
             aluno.setNota(c.getDouble(c.getColumnIndex("nota")));
+            aluno.setCaminhoFoto(c.getString(c.getColumnIndex("caminhoFoto")));
 
             alunos.add(aluno);
         }
